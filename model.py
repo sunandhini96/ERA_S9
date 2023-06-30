@@ -2,7 +2,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import albumentations as A
-
+import torch.nn.functional as F
 import torch.nn as nn
 
 class depthwise_separable_conv(nn.Module):
@@ -16,7 +16,7 @@ class depthwise_separable_conv(nn.Module):
         out = self.pointwise(out)
         return out
 
-import torch.nn.functional as F
+
 dropout_value = 0.1
         
 
@@ -32,7 +32,7 @@ class Net(nn.Module):
             nn.Dropout(0.1)
         ) # output_size = 30 , RF =  5
 
-        # CONVOLUTION BLOCK 1
+        # CONVOLUTION BLOCK 1 (here we are applying depthwise separable convolution)
         self.convblock2 = nn.Sequential(
             depthwise_separable_conv(nin=32, nout=64, kernel_size=(3, 3),dilation=2,stride=2, padding=0, bias=False),
             nn.ReLU(),
@@ -44,7 +44,7 @@ class Net(nn.Module):
             nn.Dropout(0.05)
         ) # output_size = 13 , RF = 21
 
-        # Convolution BLOCK 2
+        # Convolution BLOCK 2 (here we are applying dilation rate 2 means atrous rate 2)
         self.convblock3 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=32, kernel_size=(1,1),dilation=1, padding=0, bias=False),
             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3,3),dilation=2, padding=0, bias=False),
@@ -53,13 +53,13 @@ class Net(nn.Module):
             nn.Dropout(0.05), # output size =9 , RF = 29
         )
       
-        # CONVOLUTION BLOCK 3
+        # CONVOLUTION BLOCK 3 (here we are applying dilation rate 2 means atrous rate 2)
         self.convblock4 = nn.Sequential(
-            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3),dilation=2, padding="same", bias=False),
-            nn.ReLU(),            
-            nn.BatchNorm2d(64),
-            nn.Dropout(0.05), # output size = 9 , RF = 37
             nn.Conv2d(in_channels=64, out_channels=128, kernel_size=(3, 3),dilation=2, padding="same", bias=False),
+            nn.ReLU(),            
+            nn.BatchNorm2d(128),
+            nn.Dropout(0.05), # output size = 9 , RF = 37
+            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3),dilation=2, padding="same", bias=False),
             nn.ReLU(),            
             nn.BatchNorm2d(128),
             nn.Dropout(0.05), # output size = 9 , RF = 45
