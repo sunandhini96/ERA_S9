@@ -25,16 +25,16 @@ class Net(nn.Module):
         super(Net, self).__init__()
         # Input Block
         self.convblock1 = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=16, kernel_size=(3, 3), padding=0, bias=False),
-            nn.Conv2d(in_channels=16, out_channels=32, kernel_size=(3, 3), padding="same", bias=False),
+            nn.Conv2d(in_channels=3, out_channels=32, kernel_size=(3, 3), padding=0, bias=False),
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding="same", bias=False),
             nn.ReLU(),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(64),
             nn.Dropout(0.1)
         ) # output_size = 30 , RF =  5
 
         # CONVOLUTION BLOCK 1 (here we are applying depthwise separable convolution)
         self.convblock2 = nn.Sequential(
-            depthwise_separable_conv(nin=32, nout=64, kernel_size=(3, 3),dilation=2,stride=2, padding=0, bias=False),
+            depthwise_separable_conv(nin=64, nout=64, kernel_size=(3, 3),dilation=2,stride=2, padding=0, bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05), # output size= 13 , RF = 13
@@ -55,11 +55,11 @@ class Net(nn.Module):
       
         # CONVOLUTION BLOCK 3 (here we are applying dilation rate 2 means atrous rate 2)
         self.convblock4 = nn.Sequential(
-            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=(3, 3),dilation=2, padding="same", bias=False),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3),dilation=2, padding="same", bias=False),
             nn.ReLU(),            
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(64),
             nn.Dropout(0.05), # output size = 9 , RF = 37
-            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3),dilation=2, padding="same", bias=False),
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=(3, 3),dilation=2, padding="same", bias=False),
             nn.ReLU(),            
             nn.BatchNorm2d(128),
             nn.Dropout(0.05), # output size = 9 , RF = 45
