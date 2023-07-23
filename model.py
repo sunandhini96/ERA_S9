@@ -25,7 +25,8 @@ class Net(nn.Module):
         super(Net, self).__init__()
         # CONVOLUTION BLOCK 1
         self.convblock1 = nn.Sequential(
-            depthwise_separable_conv(nin=3, nout=32, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
+            nn.Conv2d(in_channels=3, out_channels=32, kernel_size=(3, 3), padding=1,stride=1, bias=False),
+            #depthwise_separable_conv(nin=3, nout=32, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(32),
             nn.Dropout(0.1)
@@ -41,20 +42,21 @@ class Net(nn.Module):
 
         # Transition block 1
         self.convblock3 = nn.Sequential(
-            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3, 3), padding=1,stride=2,dilation=2, bias=False)) # output_size = 16 , RF = 7 , j_out= 2
+            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3, 3), padding=2,stride=2,dilation=2, bias=False)) # output_size = 16 , RF = 7 , j_out= 2
 
 
         # Convolution BLOCK 2 (applied dilation rate 2 to increase the field of view)
         self.convblock4 = nn.Sequential(
-            depthwise_separable_conv(nin=32, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
+            #depthwise_separable_conv(nin=32, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding=1,stride=1, bias=False)
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05), # output size =14 , RF = 15 ,j_out=2
         )
 
         self.convblock5 = nn.Sequential(
-            #nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3,3),padding=1,bias=False),
-            depthwise_separable_conv(nin=64, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3,3),padding=1,bias=False),
+            #depthwise_separable_conv(nin=64, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05)
@@ -62,20 +64,22 @@ class Net(nn.Module):
 
         # Transition block 2
         self.convblock6 = nn.Sequential(
-            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3, 3), padding=1,stride=2, bias=False)) # output_size = 14 , RF = 23 , j_out= 4
+            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3, 3), padding=2,stride=2,dilation=2, bias=False)) # output_size = 14 , RF = 23 , j_out= 4
 
 
 
         # CONVOLUTION BLOCK 3
         self.convblock7 = nn.Sequential(
-            depthwise_separable_conv(nin=32, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
+            #depthwise_separable_conv(nin=32, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding=1,bias=False)
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05), # output size =7 , RF = 31 ,j_out=4
         )
 
         self.convblock8 = nn.Sequential(
-            depthwise_separable_conv(nin=64, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1,bias=False)
+            #depthwise_separable_conv(nin=64, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05)
@@ -83,7 +87,8 @@ class Net(nn.Module):
 
         # Transition block 3
         self.convblock9 = nn.Sequential(
-            depthwise_separable_conv(nin=64, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
+             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1,bias=False)
+            #depthwise_separable_conv(nin=64, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05)
