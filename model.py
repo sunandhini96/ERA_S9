@@ -23,7 +23,7 @@ dropout_value = 0.1
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        # CONVOLUTION BLOCK 1
+        # CONVOLUTION BLOCK 1   input_size = 32 , RF =  1, J_in=1
         self.convblock1 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=(3, 3), padding=1,stride=1, bias=False),
             #depthwise_separable_conv(nin=3, nout=32, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
@@ -34,24 +34,26 @@ class Net(nn.Module):
 
       # (here we are applying depthwise separable convolution to reduce computation)
         self.convblock2 = nn.Sequential(
+            #nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding=1,stride=1, bias=False),
             depthwise_separable_conv(nin=32, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05)
         ) # output_size = 32 , RF = 5 , j_out= 1
 
-        # Transition block 1
+        # Transition block 1 (applied dilation rate 2 to increase the field of view)
         self.convblock3 = nn.Sequential(
-            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3, 3), padding=2,stride=2,dilation=2, bias=False)) # output_size = 16 , RF = 7 , j_out= 2
+            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3, 3), padding=2,stride=2,dilation=2, bias=False))
+         # output_size = 16 , RF = 9 , j_out= 2
 
 
-        # Convolution BLOCK 2 (applied dilation rate 2 to increase the field of view)
+        # Convolution BLOCK 2 
         self.convblock4 = nn.Sequential(
             #depthwise_separable_conv(nin=32, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding=1,stride=1, bias=False)
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding=1,stride=1, bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
-            nn.Dropout(0.05), # output size =14 , RF = 15 ,j_out=2
+            nn.Dropout(0.05), # output size =16 , RF = 13 ,j_out=2
         )
 
         self.convblock5 = nn.Sequential(
@@ -60,45 +62,45 @@ class Net(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05)
-        ) # output_size = 14 , RF = 19 , j_out= 2
+        ) # output_size = 16 , RF = 17 , j_out= 2
 
-        # Transition block 2
+        # Transition block 2 (applied dilation rate 2 to increase the field of view)
         self.convblock6 = nn.Sequential(
-            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3, 3), padding=2,stride=2,dilation=2, bias=False)) # output_size = 14 , RF = 23 , j_out= 4
+            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3, 3), padding=2,stride=2,dilation=2, bias=False)) # output_size = 8 , RF = 25 , j_out= 4
 
 
 
         # CONVOLUTION BLOCK 3
         self.convblock7 = nn.Sequential(
             #depthwise_separable_conv(nin=32, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding=1,bias=False)
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding=1,bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
-            nn.Dropout(0.05), # output size =7 , RF = 31 ,j_out=4
+            nn.Dropout(0.05), # output size =8 , RF = 33 ,j_out=4
         )
 
         self.convblock8 = nn.Sequential(
-            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1,bias=False)
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1,bias=False),
             #depthwise_separable_conv(nin=64, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05)
-        ) # output_size = 7 , RF = 39 , j_out= 4
+        ) # output_size = 8 , RF = 41 , j_out= 4
 
         # Transition block 3
         self.convblock9 = nn.Sequential(
-             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1,bias=False)
+             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=0,bias=False),
             #depthwise_separable_conv(nin=64, nout=64, kernel_size = 3, padding = "same",stride=1, dilation=1,bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(0.05)
-        ) # output_size = 5 , RF = 47 , j_out= 4
+        ) # output_size = 6 , RF = 49 , j_out= 4
 
 
 
         # OUTPUT BLOCK
         self.gap = nn.Sequential(
-            nn.AvgPool2d(kernel_size=5)
+            nn.AvgPool2d(kernel_size=6)
         ) # output_size = 1
 
         self.convblock10 = nn.Sequential(
@@ -106,7 +108,7 @@ class Net(nn.Module):
             # nn.BatchNorm2d(10),
             # nn.ReLU(),
             # nn.Dropout(dropout_value)
-        )# output_size = 1 , RF = 47 , j_out= 4
+        )# output_size = 1 , RF = 49 , j_out= 4
 
 
         self.dropout = nn.Dropout(0.1)
